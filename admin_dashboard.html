@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Admin Management</a>
+            <button class="btn btn-outline-light" onclick="fetchAllAdmins()">Refresh Admins</button>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div id="admins-list"></div>
+    </div>
+
+    <script>
+        async function fetchAllAdmins() {
+            const response = await fetch('http://localhost:8080/admin');
+            const admins = await response.json();
+
+            let adminListHtml = `
+                <table class="table table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Picture</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            admins.forEach(admin => {
+                adminListHtml += `
+                    <tr>
+                        <td>${admin.id}</td>
+                        <td>${admin.name}</td>
+                        <td>${admin.username}</td>
+                        <td>${admin.email}</td>
+                        <td><img src="${admin.picture}" class="rounded-circle" alt="Admin" width="50"></td>
+                        <td>
+                            <button class="btn btn-primary" onclick="redirectToUpdatePage(${admin.id}, '${admin.name}', '${admin.username}', '${admin.email}', '${admin.picture}')">Update</button>
+                            <button class="btn btn-danger" onclick="deleteAdmin(${admin.id})">Delete</button>
+                        </td>
+                    </tr>`;
+            });
+
+            adminListHtml += '</tbody></table>';
+            document.getElementById('admins-list').innerHTML = adminListHtml;
+        }
+
+        function redirectToUpdatePage(id, name, username, email, picture) {
+            const url = `admin_update.html?id=${id}&name=${encodeURIComponent(name)}&username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}&picture=${encodeURIComponent(picture)}`;
+            window.location.href = url;
+        }
+
+        async function deleteAdmin(id) {
+            const confirmDelete = confirm("Are you sure?");
+            if (confirmDelete) {
+                const response = await fetch(`http://localhost:8080/admin/${id}`, { method: "DELETE" });
+                if (response.ok) {
+                    alert("Admin deleted!");
+                    fetchAllAdmins();
+                } else {
+                    alert("Error deleting admin.");
+                }
+            }
+        }
+    </script>
+</body>
+</html>

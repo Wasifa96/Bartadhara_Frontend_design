@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Detail</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(90deg, #6b8ce3, #42a5f5);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 500;
+        }
+
+        /* News Detail Container */
+        #news-detail-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        #news-detail-container img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        #news-detail-container h2 {
+            font-size: 26px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        #news-detail-container p {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #555;
+        }
+
+        #news-footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #777;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            #news-detail-container {
+                padding: 15px;
+            }
+
+            #news-detail-container h2 {
+                font-size: 22px;
+            }
+
+            #news-detail-container p {
+                font-size: 14px;
+            }
+
+            #news-footer {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            #news-footer span {
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>News Details</h1>
+    </header>
+
+    <main>
+        <section id="news-detail-container">
+            <img id="news-image" src="" alt="News Image">
+            <h2 id="news-title">Loading...</h2>
+            <p id="news-description">Please wait while we load the news details.</p>
+            <div id="news-footer">
+                <span id="news-author"></span>
+                <span id="news-date"></span>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Fetch and display the news details based on the ID
+        window.onload = function () {
+            const newsId = new URLSearchParams(window.location.search).get('id');
+            fetch(`http://localhost:8080/news/${newsId}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("news-title").textContent = data.title;
+                    document.getElementById("news-image").src = data.imageUrl;
+                    document.getElementById("news-description").textContent = data.description;
+                    document.getElementById("news-author").textContent = `By: ${data.author}`;
+                    document.getElementById("news-date").textContent = new Date(data.createdAt).toLocaleDateString();
+                })
+                .catch(error => console.error('Error fetching news details:', error));
+        };
+    </script>
+</body>
+</html>
